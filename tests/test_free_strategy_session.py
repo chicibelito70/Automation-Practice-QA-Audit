@@ -1,59 +1,50 @@
-# test_free_strategy_session.py
-# Ticket 1: Validar funcionalidad y consistencia del botón "FREE STRATEGY SESSION"
-# Página bajo prueba: https://ultimateqa.com/automation
-
-#- **Ticket 1 – Botón "FREE STRATEGY SESSION"**
-#  - Página bajo prueba: `https://ultimateqa.com/automation`.
-#  - Objetivo del test: comprobar que el botón **FREE STRATEGY SESSION** del header existe, se puede hacer clic y que la página sigue respondiendo correctamente después del clic.
-#  - El flujo actual del test es:
-#    1. Abrir la URL de Automation Practice (`AUTOMATION_URL`).
-#    2. Verificar que el botón `FREE STRATEGY SESSION` está presente en la página.
-#    3. Hacer clic en el botón.
-#    4. Si se abre una nueva pestaña, cambiar el foco a esa pestaña.
-#    5. Comprobar que la URL actual comienza por `AUTOMATION_URL` (no se rompe la navegación).
-#    6. Hacer una petición HTTP con `requests` a la URL actual y validar que devuelve **200**.
-#    7. Guardar una captura de pantalla como evidencia del resultado.
-#
-
-import pytest
+"""Test Ticket 1: Botón FREE STRATEGY SESSION en https://ultimateqa.com/automation"""
 import requests
-from config import AUTOMATION_URL
-from pages.home_page import HomePage
-from utils.screenshot_manager import ScreenshotManager
 from flaky import flaky
 
+from config import AUTOMATION_URL
+from pages.home_page import HomePage
+from utils.helpers import take_screenshot
+
+EVIDENCE_SUBFOLDER = "Ticket1_FreeStrategySession"
+
+
+@flaky(max_runs=3, min_passes=1)
 def test_free_strategy_session_button(driver):
-    @flaky(max_runs=3, rerun_filter=1)
     """
-    Precondiciones: Usuario no autenticado.
-    Valida: redirección correcta, HTTP 200, página destino coherente, sin errores en consola.
+    Valida: presencia del botón, clic, URL correcta, HTTP 200.
+    Precondiciones: usuario no autenticado.
     """
     home = HomePage(driver)
+    ev = {"evidence_subfolder": EVIDENCE_SUBFOLDER}
 
-    # 1. Acceder a la página principal (Automation Practice)
-    home.go_to_url(AUTOMATION_URL)
-    home.wait_for_url_contains("ultimateqa.com")
+    # 1. Acceder a la página principal
+    home.go_to_url(AUTOMATION_URL, evidence_name="01_navegacion_inicial", **ev)
+    home.wait_for_url_contains("ultimateqa.com", evidence_name="02_espera_url", **ev)
 
     # 2. Validar que el botón existe
-    assert home.is_button_present(), "El botón FREE STRATEGY SESSION no está presente"
+    assert home.is_button_present(
+        evidence_name="03_verificar_boton_presente", **ev
+    ), "El botón FREE STRATEGY SESSION no está presente"
 
-    # 3. Capturar errores de consola desde el inicio de la página
     driver.get_log("browser")
 
-    # 4. Click en "FREE STRATEGY SESSION"
-    home.click_free_strategy_session()
+    # 3. Click en FREE STRATEGY SESSION
+    home.click_free_strategy_session(
+        evidence_name="04_click_free_strategy_session", **ev
+    )
 
     # Si abre en nueva pestaña, cambiar a ella
     if len(driver.window_handles) > 1:
         driver.switch_to.window(driver.window_handles[-1])
 
-    # 5. Validar URL actual (se valida que siga siendo la página de Automation)
+    # 4. Validar URL y HTTP 200
     current_url = driver.current_url
     assert current_url.startswith(AUTOMATION_URL), f"URL inesperada: {current_url}"
-
-    # 6. Validar código HTTP 200 de la página destino
     response = requests.get(current_url, timeout=10)
-    assert response.status_code == 200, (f"La página destino respondió {response.status_code}, se esperaba 200")
+    assert response.status_code == 200, (
+        f"La página destino respondió {response.status_code}, se esperaba 200"
+    )
 
-    # 7. Evidencia: screenshot de la página destino
-    ScreenshotManager.take_screenshot(driver, "free_strategy_session_destino")
+    # 5. Evidencia final
+    take_screenshot(driver, "05_resultado_final", subfolder=EVIDENCE_SUBFOLDER)

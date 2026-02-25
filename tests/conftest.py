@@ -1,10 +1,19 @@
+"""Fixtures compartidos de pytest."""
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
 from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.edge.service import Service as EdgeService
-from utils.screenshot_manager import ScreenshotManager
-from config import BROWSER, CHROME_BINARY, CHROMEDRIVER_PATH, FIREFOX_BINARY, GECKODRIVER_PATH, EDGE_BINARY, EDGEDRIVER_PATH
+
+from config import (
+    BROWSER,
+    CHROME_BINARY,
+    CHROMEDRIVER_PATH,
+    FIREFOX_BINARY,
+    GECKODRIVER_PATH,
+    EDGE_BINARY,
+    EDGEDRIVER_PATH,
+)
 
 
 def _chrome_driver():
@@ -58,5 +67,6 @@ def driver():
 
 @pytest.fixture(scope='function', autouse=True)
 def setup_screenshots(driver):
-    ScreenshotManager.delete_old_screenshots()
-    ScreenshotManager.take_screenshot(driver, 'test_start')
+    """Captura inicial al iniciar cada test (Evidencias/Inicio/)."""
+    from utils.helpers import take_screenshot
+    take_screenshot(driver, "test_start", subfolder="Inicio")
