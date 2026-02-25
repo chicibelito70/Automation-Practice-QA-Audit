@@ -1,0 +1,28 @@
+########################
+# Entorno / dependencias
+########################
+venv/
+env/
+.env
+*.env
+
+########################
+# Python / pytest
+########################
+__pycache__/
+.pytest_cache/
+*.pyc
+
+########################
+# IDE / herramientas
+########################
+.vscode/
+.idea/
+.cursor/
+
+########################
+# Evidencias / artefactos
+########################
+screenshots/
+*.log
+
