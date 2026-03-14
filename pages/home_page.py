@@ -1,38 +1,53 @@
-"""Page Object de la página principal (Automation Practice)."""
 from selenium.webdriver.common.by import By
-from selenium.webdriver.remote.webdriver import WebDriver
-
 from pages.base_page import BasePage
+from utils.helpers import take_screenshot
 
 
 class HomePage(BasePage):
-    """Página Automation Practice - ultimateqa.com/automation."""
+#locators:
+    @classmethod
+    def free_strategy_session(cls):
+        return (By.XPATH, "//a[text()='Free Strategy Session']")
 
-    FREE_STRATEGY_SESSION = (By.XPATH, "//a[contains(., 'Strategy')]")
+    @classmethod
+    def automation_links(cls):
+        return (By.CSS_SELECTOR, ".et_pb_text_inner ul li a")
 
-    def __init__(self, driver: WebDriver) -> None:
-        super().__init__(driver)
+# Actions:
+    def is_strategy_button_present(self):
+    ""
+    Verifica si el botón 'Free Strategy Session' está presente en el DOM.
 
-    def click_free_strategy_session(
-        self,
-        evidence_name: str = "click_free_strategy_session",
-        capture: bool = True,
-        evidence_subfolder: str | None = None,
-    ) -> None:
-        """Hace clic en el botón Free Strategy Session del header."""
-        self.click(self.FREE_STRATEGY_SESSION, evidence_name=evidence_name,
-                   capture=capture, evidence_subfolder=evidence_subfolder)
+    Flujo:
+    Obtiene el locator del botón mediante el método free_strategy_session().
+    Utiliza el método is_element_present() de BasePage.
+    Selenium espera hasta que el elemento esté presente en el DOM.
 
-    def is_button_present(
-        self,
-        evidence_name: str = "verify_free_strategy_session",
-        capture: bool = True,
-        evidence_subfolder: str | None = None,
-    ) -> bool:
-        """Comprueba si el botón Free Strategy Session está visible."""
-        return self.is_element_present(
-            self.FREE_STRATEGY_SESSION,
-            evidence_name=evidence_name,
-            capture=capture,
-            evidence_subfolder=evidence_subfolder,
-        )
+    Returns:
+            True  -> si el botón existe en el DOM.
+            False -> si el botón no se encuentra dentro del tiempo de espera.
+    ""
+    return self.is_element_present(self.free_strategy_session())
+    take_screenshot(self.driver, "is_strategy_button_present")
+
+
+def click_strategy_button(self):
+    """
+    Realiza un clic en el botón 'Free Strategy Session'.
+
+    Flujo:
+        Obtiene el locator botón mediante free_strategy_session.
+        Utiliza el método click de BasePage.
+        Selenium espera hasta que el elemento sea clickeable.
+        Hace scroll al elemento si es necesario.
+        Ejecuta el clic.
+
+    Returns:
+        None
+
+    Resultado esperado:
+        El navegador debe navegar a la página correspondiente después clic.
+    """
+    self.click(self.free_strategy_session())
+    take_screenshot(self.driver, "click_free_strategy_session")
+    
